@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     public static boolean setDebug = false; // Settings for debug message
 
     private boolean dataExpected = false; // Whether new data from bt device is asked or not
+    private int valAvg = -1;
+    private int valPeak = -1;
+
 
     // Bluetooth stuffs
     Handler bluetoothIn;
@@ -59,11 +62,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Apply settings variables to layout
-        applySettings();
-
-        // Connect Bluetooth device at the fresh start of application
-        bluetoothMenu();
+        applySettings();    // Apply settings variables to layout
+        setPower(-1, -1);   // Re initialize power texes
+        bluetoothMenu();    // Connect Bluetooth device at the fresh start of application
 
         bluetoothIn = new Handler(new Handler.Callback() {
             @Override
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();   // Get Bluetooth adapter
-        checkBTState();
+        // checkBTState(); // Already done on DeviceListActivity
 
         // Restart button
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -158,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        // Action on settings (which basically a list of multiple CheckBoxes)
         if (id == R.id.action_settings) {
             final boolean[] selectedItems = {setHp, setDebug}; // Map setting items to their corresponding variables
 
@@ -279,19 +281,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //Checks that the Android device Bluetooth is available and prompts to be turned on if off
-    private void checkBTState() {
-        if (btAdapter == null) {
-            Toast.makeText(getBaseContext(), getString(R.string.bt_none), Toast.LENGTH_LONG).show();
-        } else {
-            if (btAdapter.isEnabled()) {
-            } else {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, 1);
-            }
-        }
-    }
-
     private void bluetoothMenu(){
         Intent intent = new Intent(this, DeviceListActivity.class);
         startActivityForResult(intent, 0); // Activity is started with requestCode 0
@@ -312,27 +301,34 @@ public class MainActivity extends AppCompatActivity {
         } else {
             text.setText(getString(R.string.unit) + getString(R.string.watt));
         }
+
+        setPower(valAvg, valPeak); // Refresh the power texts
     }
 
     public void setPower(int valAvg, int valPeak) {
         // Power texts controller
         TextView text;
+        String empty = "-";
+
+        // Store to local class variable
+        this.valAvg = valAvg;
+        this.valPeak = valPeak;
 
         text = findViewById(R.id.textAvg);
-        if (valAvg == -1) text.setText("-");
-        else if (setHp) text.setText(String.valueOf(valAvg * 0.00134102));
+
+        if (valAvg == -1) text.setText(empty);
+        else if (setHp) text.setText(String.format("%.3f", valAvg * 0.00134102));
         else text.setText(String.valueOf(valAvg));
 
+
         text = findViewById(R.id.textPeak);
-        if (valPeak == -1) text.setText("-");
-        else if (setHp) text.setText(String.valueOf(valPeak * 0.00134102));
+
+        if (valPeak == -1) text.setText(empty);
+        else if (setHp) text.setText(String.format("%.3f", valPeak * 0.00134102));
         else text.setText(String.valueOf(valPeak));
     }
 
     public void setDebugMessages(String message, int index) {
-        // Immediately stop if no debugging, better performance
-        if (!setDebug) return;
-
         TextView text;
 
         // Setting debug messages
@@ -347,10 +343,14 @@ public class MainActivity extends AppCompatActivity {
                 text.setText(getString(R.string.debug_content_3));
                 break;
             case 1:
+                // Immediately stop if no debugging, better performance
+                if (!setDebug) return;
                 text = findViewById(R.id.textDebug1);
                 text.setText(getString(R.string.debug_content_1) + message);
                 break;
             case 2:
+                // Immediately stop if no debugging, better performance
+                if (!setDebug) return;
                 text = findViewById(R.id.textDebug2);
                 text.setText(getString(R.string.debug_content_2) + message);
                 break;
