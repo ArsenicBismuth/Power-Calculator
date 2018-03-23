@@ -6,6 +6,7 @@
 
     <string name="avg">Average Power</string>
     <string name="peak">Peak Power</string>
+    <string name="high">Highest</string>
 
     <string name="unit">Units in\u0020</string>
     <string name="watt">watt</string>

@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean dataExpected = false; // Whether new data from bt device is asked or not
     private int valAvg = -1;
     private int valPeak = -1;
-
+    private int valHigh = -1;
 
     // Bluetooth stuffs
     Handler bluetoothIn;
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                     String readMessage = (String) msg.obj;           // msg.arg1 = bytes from connect thread
                     recDataString.append(readMessage);               // Keep appending to string until ~
 
-                    // Input format: #avg/peak~
+                    // Input format: #avg/peak~     // Peak data is unavailable, removed from feature. Just duplicate the avg during transmission
 
                     // Log & debug buffer of received data
                     Log.d(TAG, "Bluetooth Receive: " + recDataString);
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                     // If no new data is asked by this app
                     if (!dataExpected) recDataString.delete(0, recDataString.length()); // Clear all string data
 
-                    int endOfLineIndex = recDataString.indexOf("~"); // Determine the end-of-line
+                    int endOfLineIndex = recDataString.lastIndexOf("~"); // Determine the end-of-line
 
                     // Make sure there is data before ~
                     if (endOfLineIndex > 0) {
@@ -94,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
                             recDataString.delete(0, startOfLineIndex);  // Clear data until the latest start index
                             endOfLineIndex -= startOfLineIndex;         // Important, don't forget to shift the indexes
 
+                            // Either the first or the last pair of data, both must use the same criteria
+                            // In this case, last data is used
                             if (startOfLineIndex < endOfLineIndex) {
 
                                 // Extract whole string and display at debug message as valid data
@@ -312,7 +314,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Store to local class variable
         this.valAvg = valAvg;
-        this.valPeak = valPeak;
+        this.valPeak = valPeak; // Unused, removed feature
+
+        // Check if highest value
+        valHigh = (valAvg > valHigh) ? valAvg : valHigh;
 
         text = findViewById(R.id.textAvg);
 
@@ -321,11 +326,11 @@ public class MainActivity extends AppCompatActivity {
         else text.setText(String.valueOf(valAvg));
 
 
-        text = findViewById(R.id.textPeak);
+        text = findViewById(R.id.textHigh);
 
-        if (valPeak == -1) text.setText(empty);
-        else if (setHp) text.setText(String.format("%.3f", valPeak * 0.00134102));
-        else text.setText(String.valueOf(valPeak));
+        if (valHigh == -1) text.setText(empty);
+        else if (setHp) text.setText(String.format("%.3f", valHigh * 0.00134102));
+        else text.setText(String.valueOf(valHigh));
     }
 
     public void setDebugMessages(String message, int index) {

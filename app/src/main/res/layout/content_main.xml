@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:paddingBottom="0sp"
-            android:text="@string/peak"
+            android:text="@string/high"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -64,7 +64,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textPeak"
+            android:id="@+id/textHigh"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="true"
