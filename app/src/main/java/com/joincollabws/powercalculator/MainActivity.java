@@ -84,19 +84,19 @@ public class MainActivity extends AppCompatActivity {
 
                     int endOfLineIndex = recDataString.lastIndexOf("~"); // Determine the end-of-line
 
-                    // Make sure there is data before ~
-                    if (endOfLineIndex > 0) {
-
+                    // Make sure it exists
+                    if (endOfLineIndex > -1) {
                         // Case of multiple start symbols
                         int startOfLineIndex = recDataString.lastIndexOf("#"); // Determine the start-of-line
 
                         if (startOfLineIndex > -1) {
                             recDataString.delete(0, startOfLineIndex);  // Clear data until the latest start index
-                            endOfLineIndex -= startOfLineIndex;         // Important, don't forget to shift the indexes
 
                             // Either the first or the last pair of data, both must use the same criteria
                             // In this case, last data is used
                             if (startOfLineIndex < endOfLineIndex) {
+                                // Important, don't forget to shift the indexes
+                                endOfLineIndex -= startOfLineIndex;
 
                                 // Extract whole string and display at debug message as valid data
                                 setDebugMessages(recDataString.substring(0, endOfLineIndex), 2);
@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 setPower(-1,-1);      // Set power texts to unavailable state
+                recDataString.setLength(0);         // Clear data
 
                 mConnectedThread.write("!");  // Send "!" via Bluetooth, asking for new data
                 dataExpected = true;                // Now this app is expecting data from bt device
