@@ -1,7 +1,7 @@
 
 # Power Calculator
 
-![Final](docs/img/ss01.png)
+![Final](docs/img/ss01.jpg)
 
 Simple but solid application for interfacing a power calculator device.
 Basic functionality with:
@@ -33,8 +33,8 @@ To test using PC:
 	6. Establish connection to the one of the COM.
 	7. Type anything to send a character to the smartphone.
 
-![Settings](docs/img/ss02.png)
-![Debug](docs/img/ss03.png)
+![Settings](docs/img/ss02.jpg)
+![Debug](docs/img/ss03.jpg)
     
 
    [Apk]: <https://github.com/ArsenicBismuth/Power-Calculator/blob/master/release/app-debug.apk>
